@@ -4,15 +4,6 @@
 #include "led.h"
 #include "FreeRTOS.h"
 #include "task.h"
-/************************************************
- ALIENTEK 精英STM32F103开发板 FreeRTOS实验2-1
- FreeRTOS移植实验-库函数版本
- 技术支持：www.openedv.com
- 淘宝店铺：http://eboard.taobao.com 
- 关注微信公众平台微信号："正点原子"，免费获取STM32资料。
- 广州市星翼电子科技有限公司  
- 作者：正点原子 @ALIENTEK
-************************************************/
 
 //任务优先级
 #define START_TASK_PRIO		1
@@ -47,7 +38,7 @@ int main(void)
 	delay_init();	    				//延时函数初始化	  
 	uart_init(115200);					//初始化串口
 	LED_Init();		  					//初始化LED
-	 
+	LED_PWM_Init(999,71);           //初始化LED1 PWM调光，频率72000000/72*1000=1kHZ  
 	//创建开始任务
     xTaskCreate((TaskFunction_t )start_task,            //任务函数
                 (const char*    )"start_task",          //任务名称
@@ -93,11 +84,14 @@ void led0_task(void *pvParameters)
 //LED1任务函数
 void led1_task(void *pvParameters)
 {
+	u16 led0pwmval=0;
+	u8 dir=1;
     while(1)
     {
-        LED1=0;
-        vTaskDelay(200);
-        LED1=1;
-        vTaskDelay(800);
+      if(dir)led0pwmval++;
+			else led0pwmval--;
+			if(led0pwmval>400)dir=0;
+			if(led0pwmval==0)dir=1;
+			TIM_SetCompare2(TIM3,led0pwmval);
     }
 }

@@ -17,6 +17,6 @@
 #define LED1 PEout(5)// PE5	
 
 void LED_Init(void);//≥ı ºªØ
-
+void LED_PWM_Init(u16 arr,u16 psc);
 		 				    
 #endif
